@@ -24,42 +24,53 @@ void ASplineClass::SaveSplineData()
 {
 	SplinePointsData.Empty();
 
-	for (int32 i = 0; i <SplineComponent->GetNumberOfSplinePoints(); i++)
+	int32 NumPoints = SplineComponent->GetNumberOfSplinePoints();
+	for (int32 i = 0; i < NumPoints; i++)
 	{
 		FSplinePointData PointData;
-		PointData.Position = SplineComponent->GetLocationAtSplinePoint(i, ESplineCoordinateSpace::Local);
-		PointData.ArriveTangent = SplineComponent->GetArriveTangentAtSplinePoint(i, ESplineCoordinateSpace::Local);
-		PointData.LeaveTangent = SplineComponent->GetLeaveTangentAtSplinePoint(i, ESplineCoordinateSpace::Local);
-		PointData.Rotation = SplineComponent->GetRotationAtSplinePoint(i, ESplineCoordinateSpace::Local);
+		PointData.Position = SplineComponent->GetLocationAtSplinePoint(i, ESplineCoordinateSpace::World);
+		PointData.ArriveTangent = SplineComponent->GetArriveTangentAtSplinePoint(i, ESplineCoordinateSpace::World);
+		PointData.LeaveTangent = SplineComponent->GetLeaveTangentAtSplinePoint(i, ESplineCoordinateSpace::World);
+		PointData.Rotation = SplineComponent->GetRotationAtSplinePoint(i, ESplineCoordinateSpace::World);
 		PointData.Scale = SplineComponent->GetScaleAtSplinePoint(i);
 		PointData.PointType = static_cast<uint8>(SplineComponent->GetSplinePointType(i));
 
 		SplinePointsData.Add(PointData);
 	}
+
+	UE_LOG(LogTemp, Warning, TEXT("Spline data saved with %d points"), NumPoints);
 }
+
 
 void ASplineClass::RecreateSpline()
 {
+	if (SplinePointsData.Num() == 0) return;
+
 	SplineComponent->ClearSplinePoints(true);
 
-	for (const FSplinePointData& PointData : SplinePointsData)
+	for (int32 i = 0; i < SplinePointsData.Num(); i++)
 	{
-		SplineComponent->AddSplinePoint(PointData.Position, ESplineCoordinateSpace::Local, true);
-		int32 NewIndex = SplineComponent->GetNumberOfSplinePoints() - 1;
-
-		SplineComponent->SetTangentAtSplinePoint(NewIndex, PointData.ArriveTangent, ESplineCoordinateSpace::Local, true);
-		SplineComponent->SetTangentAtSplinePoint(NewIndex, PointData.LeaveTangent, ESplineCoordinateSpace::Local, true);
-		SplineComponent->SetRotationAtSplinePoint(NewIndex, PointData.Rotation, ESplineCoordinateSpace::Local, true);
-		SplineComponent->SetScaleAtSplinePoint(NewIndex, PointData.Scale);
-		SplineComponent->SetSplinePointType(NewIndex, static_cast<ESplinePointType::Type>(PointData.PointType), true);
+		SplineComponent->AddSplinePoint(SplinePointsData[i].Position, ESplineCoordinateSpace::World, true);
+        
+		SplineComponent->SetTangentAtSplinePoint(i, SplinePointsData[i].ArriveTangent, ESplineCoordinateSpace::World, true);
+		SplineComponent->SetTangentAtSplinePoint(i, SplinePointsData[i].LeaveTangent, ESplineCoordinateSpace::World, true);
+		SplineComponent->SetRotationAtSplinePoint(i, SplinePointsData[i].Rotation, ESplineCoordinateSpace::World, true);
+		SplineComponent->SetScaleAtSplinePoint(i, SplinePointsData[i].Scale);
+		SplineComponent->SetSplinePointType(i, static_cast<ESplinePointType::Type>(SplinePointsData[i].PointType), true);
 	}
+
+	UE_LOG(LogTemp, Warning, TEXT("Spline recreated correctly with %d points"), SplineComponent->GetNumberOfSplinePoints());
+
+	SplineComponent->UpdateSpline();
 }
+
 
 void ASplineClass::MoveActorToFirstPointAndRelocate()
 {
 	if (!SplineComponent || SplinePointsData.Num() == 0) return;
 
-	const FVector FirstPointLocation = SplinePointsData[0].Position;
+	// Pega o primeiro ponto da spline real
+	const FVector FirstPointLocation = SplineComponent->GetLocationAtSplinePoint(0, ESplineCoordinateSpace::World);
 	SetActorLocation(FirstPointLocation);
 
 	int32 NumPoints = SplineComponent->GetNumberOfSplinePoints();
@@ -75,6 +86,7 @@ void ASplineClass::MoveActorToFirstPointAndRelocate()
 	SplineComponent->UpdateSpline();
 	UE_LOG(LogTemp, Warning, TEXT("Moved actor and relocated %d spline points."), NumPoints);
 }
+
 
 void ASplineClass::AntiTwist()
 {
