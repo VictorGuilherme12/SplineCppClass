@@ -20,6 +20,42 @@
 			"TargetAllowList": [
 				"Editor"
 			]
+		},
+		{
+			"Name": "DatasmithImporter",
+			"Enabled": true
+		},
+		{
+			"Name": "DatasmithC4DImporter",
+			"Enabled": true,
+			"SupportedTargetPlatforms": [
+				"Win64",
+				"Mac"
+			]
+		},
+		{
+			"Name": "DatasmithCADImporter",
+			"Enabled": true,
+			"SupportedTargetPlatforms": [
+				"Win64",
+				"Linux"
+			]
+		},
+		{
+			"Name": "DatasmithFBXImporter",
+			"Enabled": true
+		},
+		{
+			"Name": "DatasmithInterchange",
+			"Enabled": true
+		},
+		{
+			"Name": "DatasmithMVR",
+			"Enabled": true
+		},
+		{
+			"Name": "DatasmithRuntime",
+			"Enabled": true
 		}
 	]
 }
