@@ -1,8 +1,8 @@
-#include "SplineClass.h"
+#include "SplineClassPlugin.h"
 #include "Engine/World.h"
 #include "DrawDebugHelpers.h"
 
-ASplineClass::ASplineClass()
+ASplineClassPlugin::ASplineClassPlugin()
 {
 	PrimaryActorTick.bCanEverTick = false;
 
@@ -10,17 +10,17 @@ ASplineClass::ASplineClass()
 	RootComponent = SplineComponent;
 }
 
-void ASplineClass::BeginPlay()
+void ASplineClassPlugin::BeginPlay()
 {
 	Super::BeginPlay();
 }
 
-void ASplineClass::Tick(float DeltaTime)
+void ASplineClassPlugin::Tick(float DeltaTime)
 {
 	Super::Tick(DeltaTime);
 }
 
-void ASplineClass::SaveSplineData()
+void ASplineClassPlugin::SaveSplineData()
 {
 	SplinePointsData.Empty();
 
@@ -42,7 +42,7 @@ void ASplineClass::SaveSplineData()
 }
 
 
-void ASplineClass::RecreateSpline()
+void ASplineClassPlugin::RecreateSpline()
 {
 	if (SplinePointsData.Num() == 0) return;
 
@@ -65,7 +65,7 @@ void ASplineClass::RecreateSpline()
 }
 
 
-void ASplineClass::MoveActorToFirstPointAndRelocate()
+void ASplineClassPlugin::MoveActorToFirstPointAndRelocate()
 {
 	if (!SplineComponent || SplinePointsData.Num() == 0) return;
 
@@ -88,7 +88,7 @@ void ASplineClass::MoveActorToFirstPointAndRelocate()
 }
 
 
-void ASplineClass::AntiTwist()
+void ASplineClassPlugin::AntiTwist()
 {
 	if (!SplineComponent) return;
 
@@ -111,7 +111,7 @@ void ASplineClass::AntiTwist()
 
 
 #if WITH_EDITOR
-void ASplineClass::PostEditChangeProperty(FPropertyChangedEvent& PropertyChangedEvent)
+void ASplineClassPlugin::PostEditChangeProperty(FPropertyChangedEvent& PropertyChangedEvent)
 {
 	Super::PostEditChangeProperty(PropertyChangedEvent);
 
