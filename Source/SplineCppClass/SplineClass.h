@@ -46,20 +46,24 @@ public:
 	UPROPERTY(VisibleAnywhere, Category = "Spline")
 	USplineComponent* SplineComponent;
 
-	UPROPERTY(EditAnywhere, Category = "Spline Settings")
-	bool bSnapToGround = true;
+	UPROPERTY(EditAnywhere, Category = "Spline|Spline Settings")
+	bool bSnapToGround = false;
 
-	UFUNCTION(CallInEditor, Category = "Spline")
+	UFUNCTION()
 	void SnapAllPointsToGround();
 
-	UFUNCTION(CallInEditor, Category = "Spline")
+	UFUNCTION()
 	void SaveSplineData();
 
-	UFUNCTION(CallInEditor, Category = "Spline")
+	UFUNCTION()
 	void RecreateSpline();
+
+	UFUNCTION()
+	void MoveActorToFirstPointAndRelocate();
 
 private:
 	TArray<FSplinePointData> SplinePointsData;
+	TArray<FVector> SplinePointLocations;
 
 
 #if WITH_EDITOR

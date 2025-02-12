@@ -63,7 +63,6 @@ void ASplineClass::SnapAllPointsToGround()
 	SplineComponent->UpdateSpline(); // Atualiza a spline após modificar os pontos
 }
 
-
 void ASplineClass::SaveSplineData()
 {
 	SplinePointsData.Empty();
@@ -99,27 +98,57 @@ void ASplineClass::RecreateSpline()
 	}
 }
 
+void ASplineClass::MoveActorToFirstPointAndRelocate()
+{
+	if (!SplineComponent || SplinePointsData.Num() == 0) return;
+
+	FVector FirstPointLocation = SplinePointsData[0].Position;
+	SetActorLocation(FirstPointLocation);
+
+	int32 NumPoints = SplineComponent->GetNumberOfSplinePoints();
+
+	for (int32 i = 0; i < NumPoints; i++)
+	{
+		if (i < SplinePointsData.Num())
+		{
+			SplineComponent->SetLocationAtSplinePoint(i, SplinePointsData[i].Position, ESplineCoordinateSpace::World, true);
+		}
+	}
+
+	SplineComponent->UpdateSpline();
+	UE_LOG(LogTemp, Warning, TEXT("Moved actor and relocated %d spline points."), NumPoints);
+}
+
+
 #if WITH_EDITOR
 void ASplineClass::PostEditChangeProperty(FPropertyChangedEvent& PropertyChangedEvent)
 {
 	Super::PostEditChangeProperty(PropertyChangedEvent);
 
-	// Garante que há uma propriedade modificada
 	if (PropertyChangedEvent.Property)
 	{
 		FName PropertyName = PropertyChangedEvent.Property->GetFName();
 		UE_LOG(LogTemp, Warning, TEXT("Property %s changed! Updating spline..."), *PropertyName.ToString());
 
-		// Atualiza a spline sempre que qualquer propriedade for alterada
+		// Atualiza a spline quando qualquer propriedade for alterada
 		SplineComponent->UpdateSpline();
+		Modify(); // Marca a spline como modificada no editor
+		MarkPackageDirty(); // Garante que a mudança seja salva
 
-		// Se a propriedade modificada foi relacionada ao Snap to Ground, executa a função
+		// Se foi uma mudança na propriedade "bSnapToGround", ativa o snap automático
 		if (PropertyName == GET_MEMBER_NAME_CHECKED(ASplineClass, bSnapToGround))
 		{
 			if (bSnapToGround)
 			{
 				SnapAllPointsToGround();
 			}
+		}
+
+		// Se qualquer ponto da spline for alterado, salvamos os dados da spline novamente
+		if (PropertyName == GET_MEMBER_NAME_CHECKED(USplineComponent, SplineCurves))
+		{
+			UE_LOG(LogTemp, Warning, TEXT("Spline points changed, saving new spline data..."));
+			SaveSplineData();
 		}
 	}
 }
