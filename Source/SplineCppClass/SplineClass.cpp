@@ -112,16 +112,7 @@ void ASplineClass::PostEditChangeProperty(FPropertyChangedEvent& PropertyChanged
 		SplineComponent->UpdateSpline();
 		Modify(); // Marca a spline como modificada no editor
 		MarkPackageDirty(); // Garante que a mudança seja salva
-
-		// Se foi uma mudança na propriedade "bSnapToGround", ativa o snap automático
-		if (PropertyName == GET_MEMBER_NAME_CHECKED(ASplineClass, bSnapToGround))
-		{
-			if (bSnapToGround)
-			{
-				SnapAllPointsToGround();
-			}
-		}
-
+		
 		// Se qualquer ponto da spline for alterado, salvamos os dados da spline novamente
 		if (PropertyName == GET_MEMBER_NAME_CHECKED(USplineComponent, SplineCurves))
 		{
