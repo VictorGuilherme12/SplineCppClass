@@ -3,7 +3,7 @@
 #include "CoreMinimal.h"
 #include "GameFramework/Actor.h"
 #include "Components/SplineComponent.h"
-#include "SplineClass.generated.h"
+#include "SplineClassPlugin.generated.h"
 
 USTRUCT(BlueprintType)
 struct FSplinePointData
@@ -30,12 +30,12 @@ struct FSplinePointData
 };
 
 UCLASS()
-class SPLINECPPCLASS_API ASplineClass : public AActor
+class SPLINECLASSPLUGIN_API ASplineClassPlugin : public AActor
 {
 	GENERATED_BODY()
 
 public:
-	ASplineClass();
+	ASplineClassPlugin();
 
 protected:
 	virtual void BeginPlay() override;
