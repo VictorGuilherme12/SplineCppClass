@@ -102,7 +102,7 @@ void ASplineClass::MoveActorToFirstPointAndRelocate()
 {
 	if (!SplineComponent || SplinePointsData.Num() == 0) return;
 
-	FVector FirstPointLocation = SplinePointsData[0].Position;
+	const FVector FirstPointLocation = SplinePointsData[0].Position;
 	SetActorLocation(FirstPointLocation);
 
 	int32 NumPoints = SplineComponent->GetNumberOfSplinePoints();
@@ -118,6 +118,27 @@ void ASplineClass::MoveActorToFirstPointAndRelocate()
 	SplineComponent->UpdateSpline();
 	UE_LOG(LogTemp, Warning, TEXT("Moved actor and relocated %d spline points."), NumPoints);
 }
+
+void ASplineClass::AntiTwist()
+{
+	if (!SplineComponent) return;
+
+	const int32 NumPoints = SplineComponent->GetNumberOfSplinePoints();
+
+	for (int32 i = 0; i < NumPoints; i++)
+	{
+		FVector UpVector = SplineComponent->GetUpVectorAtSplinePoint(i, ESplineCoordinateSpace::Local);
+
+		UpVector = FVector(UpVector.X, UpVector.Y, 1.0f);
+
+		SplineComponent->SetUpVectorAtSplinePoint(i, UpVector.GetSafeNormal(), ESplineCoordinateSpace::Local, true);
+	}
+
+	SplineComponent->UpdateSpline();
+
+	UE_LOG(LogTemp, Warning, TEXT("AntiTwist() applied - Up Vectors aligned"));
+}
+
 
 
 #if WITH_EDITOR
