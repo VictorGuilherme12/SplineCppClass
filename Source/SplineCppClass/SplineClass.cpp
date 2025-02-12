@@ -98,3 +98,29 @@ void ASplineClass::RecreateSpline()
 		SplineComponent->SetSplinePointType(NewIndex, static_cast<ESplinePointType::Type>(PointData.PointType), true);
 	}
 }
+
+#if WITH_EDITOR
+void ASplineClass::PostEditChangeProperty(FPropertyChangedEvent& PropertyChangedEvent)
+{
+	Super::PostEditChangeProperty(PropertyChangedEvent);
+
+	// Garante que há uma propriedade modificada
+	if (PropertyChangedEvent.Property)
+	{
+		FName PropertyName = PropertyChangedEvent.Property->GetFName();
+		UE_LOG(LogTemp, Warning, TEXT("Property %s changed! Updating spline..."), *PropertyName.ToString());
+
+		// Atualiza a spline sempre que qualquer propriedade for alterada
+		SplineComponent->UpdateSpline();
+
+		// Se a propriedade modificada foi relacionada ao Snap to Ground, executa a função
+		if (PropertyName == GET_MEMBER_NAME_CHECKED(ASplineClass, bSnapToGround))
+		{
+			if (bSnapToGround)
+			{
+				SnapAllPointsToGround();
+			}
+		}
+	}
+}
+#endif
