@@ -20,49 +20,6 @@ void ASplineClass::Tick(float DeltaTime)
 	Super::Tick(DeltaTime);
 }
 
-void ASplineClass::SnapAllPointsToGround()
-{
-	if (!bSnapToGround || !SplineComponent) 
-	{
-		UE_LOG(LogTemp, Warning, TEXT("Snap to Ground is disabled or SplineComponent is null!"));
-		return;
-	}
-
-	UWorld* World = GetWorld();
-	if (!World) 
-	{
-		UE_LOG(LogTemp, Warning, TEXT("World is null!"));
-		return;
-	}
-
-	for (int32 i = 0; i < SplineComponent->GetNumberOfSplinePoints(); i++)
-	{
-		FVector PointLocation = SplineComponent->GetLocationAtSplinePoint(i, ESplineCoordinateSpace::World);
-		FVector Start = PointLocation + FVector(0, 0, 500);  // Aumentamos o ponto inicial
-		FVector End = PointLocation + FVector(0, 0, -10000);
-
-		FHitResult HitResult;
-		FCollisionQueryParams QueryParams;
-		QueryParams.AddIgnoredActor(this);
-
-		UE_LOG(LogTemp, Warning, TEXT("Processing spline point %d at %s"), i, *PointLocation.ToString());
-
-		if (World->LineTraceSingleByChannel(HitResult, Start, End, ECC_Visibility, QueryParams))
-		{
-			UE_LOG(LogTemp, Warning, TEXT("Point %d hit ground at %s"), i, *HitResult.ImpactPoint.ToString());
-
-			SplineComponent->SetLocationAtSplinePoint(i, HitResult.ImpactPoint, ESplineCoordinateSpace::World, true);
-			SplineComponent->SetUpVectorAtSplinePoint(i, HitResult.ImpactNormal, ESplineCoordinateSpace::World, true);
-		}
-		else
-		{
-			UE_LOG(LogTemp, Warning, TEXT("Point %d did not hit anything!"), i);
-		}
-	}
-
-	SplineComponent->UpdateSpline(); // Atualiza a spline após modificar os pontos
-}
-
 void ASplineClass::SaveSplineData()
 {
 	SplinePointsData.Empty();

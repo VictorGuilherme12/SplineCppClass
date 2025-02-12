@@ -48,10 +48,7 @@ public:
 
 	UPROPERTY(EditAnywhere, Category = "Spline|Spline Settings")
 	bool bSnapToGround = false;
-
-	UFUNCTION()
-	void SnapAllPointsToGround();
-
+	
 	UFUNCTION()
 	void SaveSplineData();
 
