@@ -5,6 +5,30 @@
 #include "Components/SplineComponent.h"
 #include "SplineClass.generated.h"
 
+USTRUCT(BlueprintType)
+struct FSplinePointData
+{
+	GENERATED_BODY()
+
+	UPROPERTY()
+	FVector Position;
+
+	UPROPERTY()
+	FVector ArriveTangent;
+
+	UPROPERTY()
+	FVector LeaveTangent;
+
+	UPROPERTY()
+	FRotator Rotation;
+
+	UPROPERTY()
+	FVector Scale;
+
+	UPROPERTY()
+	uint8 PointType;
+};
+
 UCLASS()
 class SPLINECPPCLASS_API ASplineClass : public AActor
 {
@@ -27,4 +51,13 @@ public:
 
 	UFUNCTION(CallInEditor, Category = "Spline")
 	void SnapAllPointsToGround();
+
+	UFUNCTION(CallInEditor, Category = "Spline")
+	void SaveSplineData();
+
+	UFUNCTION(CallInEditor, Category = "Spline")
+	void RecreateSpline();
+
+private:
+	TArray<FSplinePointData> SplinePointsData;
 };

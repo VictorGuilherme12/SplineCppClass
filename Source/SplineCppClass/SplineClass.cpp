@@ -44,3 +44,38 @@ void ASplineClass::SnapAllPointsToGround()
 		}
 	}
 }
+
+void ASplineClass::SaveSplineData()
+{
+	SplinePointsData.Empty();
+
+	for (int32 i = 0; i <SplineComponent->GetNumberOfSplinePoints(); i++)
+	{
+		FSplinePointData PointData;
+		PointData.Position = SplineComponent->GetLocationAtSplinePoint(i, ESplineCoordinateSpace::Local);
+		PointData.ArriveTangent = SplineComponent->GetArriveTangentAtSplinePoint(i, ESplineCoordinateSpace::Local);
+		PointData.LeaveTangent = SplineComponent->GetLeaveTangentAtSplinePoint(i, ESplineCoordinateSpace::Local);
+		PointData.Rotation = SplineComponent->GetRotationAtSplinePoint(i, ESplineCoordinateSpace::Local);
+		PointData.Scale = SplineComponent->GetScaleAtSplinePoint(i);
+		PointData.PointType = static_cast<uint8>(SplineComponent->GetSplinePointType(i));
+
+		SplinePointsData.Add(PointData);
+	}
+}
+
+void ASplineClass::RecreateSpline()
+{
+	SplineComponent->ClearSplinePoints(true);
+
+	for (const FSplinePointData& PointData : SplinePointsData)
+	{
+		SplineComponent->AddSplinePoint(PointData.Position, ESplineCoordinateSpace::Local, true);
+		int32 NewIndex = SplineComponent->GetNumberOfSplinePoints() - 1;
+
+		SplineComponent->SetTangentAtSplinePoint(NewIndex, PointData.ArriveTangent, ESplineCoordinateSpace::Local, true);
+		SplineComponent->SetTangentAtSplinePoint(NewIndex, PointData.LeaveTangent, ESplineCoordinateSpace::Local, true);
+		SplineComponent->SetRotationAtSplinePoint(NewIndex, PointData.Rotation, ESplineCoordinateSpace::Local, true);
+		SplineComponent->SetScaleAtSplinePoint(NewIndex, PointData.Scale);
+		SplineComponent->SetSplinePointType(NewIndex, (ESplinePointType::Type)PointData.PointType, true);
+	}
+}
