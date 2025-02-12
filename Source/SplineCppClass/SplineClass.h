@@ -61,6 +61,9 @@ public:
 	UFUNCTION()
 	void MoveActorToFirstPointAndRelocate();
 
+	UFUNCTION()
+	void AntiTwist();
+
 private:
 	TArray<FSplinePointData> SplinePointsData;
 	TArray<FVector> SplinePointLocations;
