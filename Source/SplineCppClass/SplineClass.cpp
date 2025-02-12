@@ -76,6 +76,6 @@ void ASplineClass::RecreateSpline()
 		SplineComponent->SetTangentAtSplinePoint(NewIndex, PointData.LeaveTangent, ESplineCoordinateSpace::Local, true);
 		SplineComponent->SetRotationAtSplinePoint(NewIndex, PointData.Rotation, ESplineCoordinateSpace::Local, true);
 		SplineComponent->SetScaleAtSplinePoint(NewIndex, PointData.Scale);
-		SplineComponent->SetSplinePointType(NewIndex, (ESplinePointType::Type)PointData.PointType, true);
+		SplineComponent->SetSplinePointType(NewIndex, static_cast<ESplinePointType::Type>(PointData.PointType), true);
 	}
 }
